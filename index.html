@@ -1,11 +1,57 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>My Login Website</title>
+  <title>LoginWebsite</title>
 </head>
 <body>
 
-<h1>Welcome</h1>
+<h1>Google Login Website</h1>
+
+<button id="loginBtn">Sign in with Google</button>
+
+<p id="user"></p>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "paste apiKey here",
+  authDomain: "paste authDomain here",
+  projectId: "paste projectId here",
+  storageBucket: "paste storageBucket here",
+  messagingSenderId: "paste messagingSenderId here",
+  appId: "paste appId here"
+};
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+document.getElementById("loginBtn").addEventListener("click", async () => {
+
+  const provider = new GoogleAuthProvider();
+
+  const result = await signInWithPopup(auth, provider);
+
+  const user = result.user;
+
+  document.getElementById("user").innerHTML =
+    "Logged in as: " + user.email;
+
+  await setDoc(doc(db, "users", user.uid), {
+    email: user.email,
+    name: user.displayName,
+    createdAt: new Date().toISOString()
+  });
+
+  alert("User saved!");
+});
+
+</script>
 
 </body>
 </html>
